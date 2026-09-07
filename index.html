@@ -1,0 +1,194 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Spam Detection Engine</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .app-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 28px;
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    }
+    h1 {
+      font-size: 22px;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    p.desc {
+      font-size: 13px;
+      color: #94a3b8;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 130px;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      color: #ffffff;
+      padding: 12px;
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+    }
+    textarea:focus {
+      border-color: #38bdf8;
+    }
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-main {
+      flex: 2;
+      background: #38bdf8;
+      color: #0f172a;
+    }
+    .btn-main:hover {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .btn-secondary {
+      flex: 1;
+      background: #334155;
+      color: #e2e8f0;
+    }
+    .btn-secondary:hover {
+      background: #475569;
+    }
+    .status-box {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 8px;
+      display: none;
+    }
+    .spam-alert {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+    }
+    .ham-alert {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid #22c55e;
+      color: #86efac;
+    }
+    .status-box h3 {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+    .status-box p {
+      font-size: 13px;
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+    .tag-list {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-card">
+  <h1>Email Spam Detection System</h1>
+  <p class="desc">NLP & Pattern Matching Simulator for College Demo</p>
+
+  <textarea id="emailInput" placeholder="Paste email text here to test..."></textarea>
+
+  <div class="action-row">
+    <button class="btn-secondary" onclick="setSpamSample()">Test Spam</button>
+    <button class="btn-secondary" onclick="setSafeSample()">Test Safe</button>
+    <button class="btn-main" onclick="checkSpam()">Analyze Content</button>
+  </div>
+
+  <div id="outputBox" class="status-box">
+    <h3 id="outputHeading"></h3>
+    <p id="outputDetail"></p>
+    <div id="outputTags" class="tag-list"></div>
+  </div>
+</div>
+
+<script>
+  const scamTriggers = [
+    "lottery", "winner", "congratulations", "won", "prize", "claim now",
+    "free money", "cash", "urgent", "act now", "risk free", "limited time",
+    "100% free", "bank details", "verify your account", "credit card", 
+    "transfer money", "million dollars", "inheritance", "password", "crypto", "click here"
+  ];
+
+  function checkSpam() {
+    const rawText = document.getElementById('emailInput').value.trim();
+    const output = document.getElementById('outputBox');
+    const heading = document.getElementById('outputHeading');
+    const detail = document.getElementById('outputDetail');
+    const tags = document.getElementById('outputTags');
+
+    if (!rawText) {
+      alert("Pehle email text box me kuch enter karein!");
+      return;
+    }
+
+    const lower = rawText.toLowerCase();
+    const foundTriggers = scamTriggers.filter(term => lower.includes(term));
+
+    output.style.display = "block";
+
+    if (foundTriggers.length > 0) {
+      output.className = "status-box spam-alert";
+      heading.textContent = "🚨 Result: SPAM / Phishing Email";
+      const risk = Math.min(65 + (foundTriggers.length * 10), 99);
+      detail.innerHTML = `Spam probability: <b>${risk}%</b>. Suspicious phishing patterns detected.`;
+      tags.innerHTML = `<b>Matched Triggers:</b> ${foundTriggers.join(", ")}`;
+    } else {
+      output.className = "status-box ham-alert";
+      heading.textContent = "✅ Result: Safe (Ham) Email";
+      detail.innerHTML = "Legitimate structure detected. No financial triggers or suspicious phrases found.";
+      tags.innerHTML = "<b>Confidence:</b> 95% Legitimate";
+    }
+  }
+
+  function setSpamSample() {
+    document.getElementById('emailInput').value = "Congratulations! You have won a lottery of $1,000,000. Claim now and verify your bank details urgently.";
+    checkSpam();
+  }
+
+  function setSafeSample() {
+    document.getElementById('emailInput').value = "Hello team, please review the attached project schedule for our meeting tomorrow morning at 10 AM.";
+    checkSpam();
+  }
+</script>
+
+</body>
+</html>
